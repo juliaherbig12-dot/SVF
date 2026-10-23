@@ -1,0 +1,223 @@
+{
+  "departments": [
+    {
+      "name": "Fußball",
+      "slug": "fussball",
+      "description": "Aktive Herren, Aktive Damen und Jugend",
+      "icon": "⚽",
+      "sort_order": 10,
+      "is_spielgemeinschaft": 1,
+      "sg_text": "Der Fußballbereich des SV Frohnstetten wird als SGM Heuberg geführt."
+    },
+    {
+      "name": "Volleyball",
+      "slug": "volleyball",
+      "description": "Jugend, Mixed und weitere Gruppen",
+      "icon": "🏐",
+      "sort_order": 20
+    },
+    {
+      "name": "Turnen & Gymnastik",
+      "slug": "turnen-gymnastik",
+      "description": "Kinderturnen, Frauengymnastik und Herrengymnastik",
+      "icon": "🤸",
+      "sort_order": 30
+    },
+    {
+      "name": "Leichtathletik",
+      "slug": "leichtathletik",
+      "description": "Sportabzeichen und Lauftreff",
+      "icon": "🏃",
+      "sort_order": 40
+    }
+  ],
+  "groups": [
+    {
+      "department": "fussball",
+      "parent": null,
+      "name": "Aktive Herren",
+      "slug": "aktive-herren",
+      "sort_order": 10
+    },
+    {
+      "department": "fussball",
+      "parent": null,
+      "name": "Aktive Damen",
+      "slug": "aktive-damen",
+      "sort_order": 20
+    },
+    {
+      "department": "fussball",
+      "parent": null,
+      "name": "Jugend",
+      "slug": "jugend",
+      "sort_order": 30
+    },
+    {
+      "department": "volleyball",
+      "parent": null,
+      "name": "Jugend",
+      "slug": "jugend",
+      "sort_order": 10
+    },
+    {
+      "department": "volleyball",
+      "parent": null,
+      "name": "Mixed",
+      "slug": "mixed",
+      "sort_order": 20
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": null,
+      "name": "Kinderturnen",
+      "slug": "kinderturnen",
+      "sort_order": 10
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": null,
+      "name": "Frauengymnastik",
+      "slug": "frauengymnastik",
+      "sort_order": 20
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": null,
+      "name": "Herrengymnastik",
+      "slug": "herrengymnastik",
+      "sort_order": 30
+    },
+    {
+      "department": "leichtathletik",
+      "parent": null,
+      "name": "Sportabzeichen",
+      "slug": "sportabzeichen",
+      "sort_order": 10
+    },
+    {
+      "department": "leichtathletik",
+      "parent": null,
+      "name": "Lauftreff",
+      "slug": "lauftreff",
+      "sort_order": 20
+    },
+    {
+      "department": "fussball",
+      "parent": "aktive-herren",
+      "name": "1. Mannschaft",
+      "slug": "1-mannschaft",
+      "sort_order": 10
+    },
+    {
+      "department": "fussball",
+      "parent": "aktive-herren",
+      "name": "2. Mannschaft",
+      "slug": "2-mannschaft",
+      "sort_order": 20
+    },
+    {
+      "department": "fussball",
+      "parent": "aktive-damen",
+      "name": "1. Mannschaft",
+      "slug": "1-mannschaft",
+      "sort_order": 10
+    },
+    {
+      "department": "fussball",
+      "parent": "aktive-damen",
+      "name": "2. Mannschaft",
+      "slug": "2-mannschaft",
+      "sort_order": 20
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": "kinderturnen",
+      "name": "Eltern-Kind-Turnen",
+      "slug": "eltern-kind-turnen",
+      "sort_order": 10
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": "kinderturnen",
+      "name": "Vorschulturnen",
+      "slug": "vorschulturnen",
+      "sort_order": 20
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": "kinderturnen",
+      "name": "1. + 2. Klasse",
+      "slug": "1-2-klasse",
+      "sort_order": 30
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": "kinderturnen",
+      "name": "3. + 4. Klasse",
+      "slug": "3-4-klasse",
+      "sort_order": 40
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": "frauengymnastik",
+      "name": "Aerobic",
+      "slug": "aerobic",
+      "sort_order": 10
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": "frauengymnastik",
+      "name": "Gruppe Erika",
+      "slug": "gruppe-erika",
+      "sort_order": 20
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": "frauengymnastik",
+      "name": "Gruppe Christine",
+      "slug": "gruppe-christine",
+      "sort_order": 30
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": "frauengymnastik",
+      "name": "Gesundheitssport",
+      "slug": "gesundheitssport",
+      "sort_order": 40
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": "frauengymnastik",
+      "name": "Fit und Gesund",
+      "slug": "fit-und-gesund",
+      "sort_order": 50
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": "herrengymnastik",
+      "name": "Fitnessgymnastik",
+      "slug": "fitnessgymnastik",
+      "sort_order": 10
+    },
+    {
+      "department": "turnen-gymnastik",
+      "parent": "herrengymnastik",
+      "name": "Jedermann",
+      "slug": "jedermann",
+      "sort_order": 20
+    }
+  ],
+  "sgm_partners": [
+    {
+      "name": "TSV Stetten a.k.M.",
+      "url": "https://www.tsv-stetten-akm.de",
+      "sort_order": 10
+    },
+    {
+      "name": "SV Schwenningen",
+      "url": "https://www.svschwenningen.de",
+      "sort_order": 20
+    }
+  ]
+}

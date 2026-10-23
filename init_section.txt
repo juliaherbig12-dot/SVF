@@ -1,0 +1,401 @@
+ $st=$db->prepare("INSERT INTO club_links(category,title,url,sort_order) VALUES(?,?,?,?)");
+ foreach(($clubSeed['links'] ?? []) as $x)$st->execute($x);
+}
+// Inhalte "Unser Verein"
+$db->exec("CREATE TABLE IF NOT EXISTS club_pages (
+ id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, slug TEXT NOT NULL UNIQUE, intro TEXT, content TEXT, sort_order INTEGER DEFAULT 0, active INTEGER DEFAULT 1, updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+)");
+$db->exec("CREATE TABLE IF NOT EXISTS club_documents (
+ id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, slug TEXT NOT NULL UNIQUE, description TEXT, storage_path TEXT, original_filename TEXT, mime_type TEXT, content TEXT, sort_order INTEGER DEFAULT 0, active INTEGER DEFAULT 1, updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+)");
+$docCols=[]; foreach($db->query("PRAGMA table_info(club_documents)") as $col) $docCols[$col['name']]=true;
+if(!isset($docCols['content'])) $db->exec("ALTER TABLE club_documents ADD COLUMN content TEXT");
+$pages=[
+ ['Vorstandschaft','vorstand','Ansprechpartner und Vorstandschaft des SV Frohnstetten.',"1. Vorsitzender Alexander Neuburger 954359\n\n2. Vorsitzender Mathias Melcher 1698\n\nGeschäftsführer Philipp Ring\n\nSchriftführer Thomas Melcher\n\nAbteilungsleiter Fußball Dominik Götz\n\nStellvertreter Fußball Maximilian Killmaier\n\nAbteilungsleiter Turnen Judith Niemczewski\n\nStellvertreter Turnen Silke Kraus\n\nKassierer Frank Koslowski 9587330\n\nPressewart Karl-Peter Neusch 1830\n\nJugendleiterin Stefanie Peter\n\nJugendleiterstellvertreter Jürgen Hotz\n\nJugendsprecher Sophia Nagel und Kathleen Arends\n\nVertreter der Passiven Thomas Dreher",10],
+ ['Übungsleiter','uebungsleiter','Übungsleiter / Übungszeiten',"Übungsleiter Turnen\n\nSchüler/Jugendliche\n\nEltern-Kind-Turnen:\nMittwoch 16:45 Uhr - 18:00 Uhr; 2 - 4 Jahre; Hohenzollernhalle\n\nTurnen für Vorschüler:\nMontag 16:00 - 17:30 Uhr; 4 - 6 Jahre; Hohenzollernhalle\n\nSpiel & Spaß querbeet:\nMontag 17:45 - 18:45 Uhr; 1. - 2. Klasse; Hohenzollernhalle\n\nLeichtathletik und mehr:\nHier wird aktuell eine Nachfolge gesucht! Bei Interesse melden Sie sich gerne.\n\nFreizeitvolleyball:\nMittwoch 18:00 Uhr - 19:30 Uhr; Hohenzollernhalle oder Rasenfeld Riederwäldle\nFreitag 17:00 Uhr - 19:30 Uhr; Hohenzollernhalle oder Rasenfeld Riederwäldle; ab 15 Jahren\nMoritz Rebholz\n\nErwachsene:\n\nTurn- und Gymnastikgruppe:\nMontag 20:30 Uhr - 22:00 Uhr; für Frauen; Hohenzollernhalle\nJudith Niemczewski\n\nFrauen - Fitness - Gymnastik:\nDonnerstag 20:30 Uhr - 21:45 Uhr\nErika Früh\n\nGesundheitssport Frauen:\nDonnerstag 19:15 Uhr - 20:30 Uhr\nMargot von Allwörden-Straub\n\nMänner - Fitness - Gymnastik:\nDienstag 20:30 Uhr - 22:00 Uhr\nGerhard Wochner\n\nFit + Gesund für Frauen\nDienstag 19:30 Uhr - 20:30 Uhr\nGerline Neurauter",20],
+ ['Links','links','Politische Gemeinde, Landkreis, Sportverbände und Partner.',"Politische Gemeinde und Landkreis\n\nGemeinde Stetten am kalten Markt\n\nOrtsteil Storzingen\n\nLandkreis Sigmaringen\n\nErlebniskreis Sigmaringen\n\nSportverbände/Vereine\n\nWürttembergischer Landessportbund e.V.\n\nVolleyball-Verband\n\nTSV Stetten a.k.M. e.V.\n\nWFV\n\nWürttembergischer Leichtathletik-Verband\n\nLandesturnfest Offenburg",30],
+];
+$st=$db->prepare("INSERT OR IGNORE INTO club_pages(title,slug,intro,content,sort_order) VALUES(?,?,?,?,?)"); foreach($pages as $x)$st->execute($x);
+$st=$db->prepare("UPDATE club_pages SET intro=?, content=? WHERE slug=? AND (content IS NULL OR trim(content)='' OR content LIKE 'Die Inhalte dieser Seite können%')"); foreach($pages as $x)$st->execute([$x[2],$x[3],$x[1]]);
+$docs=[
+ ['Satzung','satzung','Satzung des SV Frohnstetten 1912/49 e.V.',10, <<<'TEXT'
+Satzung des SV Frohnstetten 1912/49 e.V.
+
+§ 1 Name und Sitz
+
+Der Name des Vereins ist Sportverein Frohnstetten 1912/49 e.V. Er ist unter der Nummer VR 710046 im Vereinsregister des Amtsgerichts Ulm eingetragen und hat seinen Sitz in Frohnstetten. Die Farben des Vereins sind blau/weiß.
+Dem Verein liegen der Schutz und die Förderung der ihm und seinen Mitgliedern und Mitarbeitern anvertrauten Kinder sehr am Herzen. Er stellt es sich zur Aufgabe, sich für deren Integrität, körperliche und seelische Unversehrtheit sowie Selbstbestimmung einzutreten. Er bekennt sich zu den Grundsätzen eines umfassenden Kinder- und Jugendschutzes.
+
+§ 2 Geschäftsjahr
+
+Das Geschäftsjahr ist das Kalenderjahr.
+
+§ 3 Vereineszweck
+
+Der Verein verfolgt ausschließlich und unmittelbar gemeinnützige Zwecke im Sinne des Abschnitts „Steuerbegünstigte Zwecke“ der Abgabenordnung. Seine Tätigkeit ist darauf gerichtet, die Allgemeinheit selbstlos zu fördern durch Pflege des Sports und der freien Jugendhilfe. Es werden nicht in erster Linie eigenwirtschaftliche Zwecke verfolgt. Etwaige Gewinne dürfen nur für die satzungsmäßigen Zwecke verwendet werden. Die Mitglieder erhalten keine Gewinnanteile und in ihrer Eigenschaft als Mitglieder auch keine sonstigen Zuwendungen aus Mitteln des Vereins. Sie erhalten bei ihrem Ausscheiden oder bei der Auflösung oder Aufhebung des Vereines weder einbezahlte Beiträge zurück, noch haben sie irgendeinen Anspruch auf Vereinsvermögen. Es darf keine Person durch Ausgaben, die den Zwecken des Vereins fremd sind, oder durch unverhältnismäßig hohe Vergütungen begünstigt werden.
+Der Verein bekennt sich zur demokratischen Staats- und Lebensauffassung. Bestrebungen politischer, konfessioneller und rassischer Art sind im Verein ausgeschlossen.
+Wird eine Satzungsbestimmung, welche eine Voraussetzung der Anerkennung der Gemeinnützigkeit berührt geändert, so ist das zuständige Finanzamt zu benachrichtigen.
+
+§ 4 Verbandsanschluss
+
+Der Verein ist Mitglied des Württembergischen Landessportbundes e.V. in Stuttgart, dessen Satzungen er anerkennt. Demgemäss unterwirft er sich auch in den Satzungen und Ordnungen (Rechtsordnung, Spielordnung, Disziplinordnung, Amateurordnung, usw. ) der Mitgliedsverbände des Württ. Landessportbundes, deren Sportarten im Verein betrieben werden.
+
+§ 5 Mitglieder
+
+Der Verein führt als Mitglieder:
+aktive Mitglieder
+passive Mitglieder
+Kinder und Jugendliche
+Ehrenmitglieder
+
+Als passive Mitglieder werden die Mitglieder eingestuft, die im Verein nicht am Sportbetrieb teilnehmen.
+Ehrenmitglieder werden auf Beschluss des Vorstandes mit mindestens 2/3 Mehrheit ernannt. Die Ernennung ist bei einem geeigneten Anlass bekannt zugeben und eine Urkunde zu überreichen.
+Weitere Ehrungen der Vereinsmitglieder sind einer vom Vorstand zu beschließenden Ehrenordung festzulegen.
+
+§ 6 Erwerb der Mitgliedschaft
+
+Mitglied kann jede natürliche Person werden. Die Aufnahme ist schriftlich zu beantragen. Bei Minderjährigen ist die schriftliche Zustimmung der gesetzlichen Vertreter erforderlich.
+Über die Aufnahme entscheidet der Vorstand. Wird ein Aufnahmeantrag abgelehnt, so ist der Vorstand nicht erpflichtet, hierfür Gründe anzugeben. Einspruch gegen den Ablehnungsbescheid ist innerhalb von 2 Wochen nach Bekanntgabe der Ablehnung an den Vorstand zulässig. Dieser entscheidet endgültig. Die Mitgliedschaft rechnet ab dem Zeitpunkt des Eingangs des Aufnahmeantrags. Soweit eine Aufnahmegebühr zu entrichten ist, mit deren Zahlung.
+Für Ehrungen wird als Mitgliedszeit nur die Mitgliedschaft ab vollendetem 15. Lebensjahr anerkannt. Bei Wiedereintritt werden frühere Mitgliedszeiten angerechnet.
+
+§ 7 Pflichten der Mitglieder
+
+Mit der Aufnahme verpflichtet sich das Mitglied zur Förderung des Vereinszwecks. Es unterwirft sich den Satzungen und Ordnungen des Vereins und des Württembergischen Landessportbundes sowie derjenigen Verbände, deren Sportarten im Verein betrieben werden und die Mitglied des Württembergischen Sportbundes e.V. sind Den Anordnungen des Vorstands und den von ihm bestellten Vereinsmitgliedern ist Folge zu Leisten. Die Mitglieder sind zur Zahlung der festgesetzten Aufnahmegebühren, Beiträge und Umlagen verpflichtet.
+Die aktiven Mitglieder verpflichten sich, am Sport und Gemeinschaftsleben des Vereins aktiv mitzuwirken und im Sport eine faire und kameradschaftliche Haltung zu zeigen.
+
+§ 8 Rechte der Mitglieder
+
+Die Mitglieder haben nach Erfüllung ihrer Beitragspflicht das Recht, im Rahmen des vom Vorstand beschlossenen Übungs- und Trainingsplan die vereinseigenen Einrichtungen zu nutzen, insbesondere die Sportanlagen zur Ausübung des Sports in Anspruch zu nehmen, auf Teilnahme an den Mitgliederversammlungen, wobei jedoch nur Mitglieder ab dem vollendeten 16. Lebensjahr stimmberechtigt sind.
+Schüler und Jugendliche sowie Mitglieder, die in der Jugendarbeit tätig sind, haben das Recht auf Teilnahme an der Jugendvollversammlung.
+
+Die Mitglieder des Vereins erlangen mit vollendetem 16. Lebensjahr Stimm- und Wahlfähigkeit (aktiv und passiv) in allen den Verein betreffenden Angelegenheiten.
+Als Kassenprüfer und Vorstandsmitglied, mit Ausnahme des Jugendsprechers, können nur Vereinsmitglieder gewählt werden, die das 18. Lebensjahr vollendet haben.
+Der Jugendsprecher darf bei seiner Wahl das 23. Lebensjahr noch nicht vollendet haben.
+
+§ 9 Verlust der Mitgliedschaft
+
+Die Mitgliedschaft endet durch Austritt, Ausschluss oder Tod.
+Der Austritt erfolgt durch schriftliche Erklärung gegenüber dem Vorstand. Er ist zum Schluss eines Kalenderjahres unter Einhaltung einer Frist von einem Monat (bis einschl. 30.11.) zulässig. Die Austrittserklärung von Minderjährigen bedarf der Unterschrift durch einen Erziehungsberechtigten.
+Der Ausschluss aus dem Verein kann durch den Vorstand erfolgen, wenn
+1. das Mitglied trotz zweifacher Mahnung mit der Zahlung der Beiträge oder Umlagen im Rückstand ist,
+2. bei groben Verstoß gegen die Vereinssatzung oder einer Satzung eines Verbandes, dem der Verein als Mitglied angehört,
+3. sich das Vereinsmitglied unehrenhaft verhält, oder das Ansehen des Vereins oder eines Verbandes, dem der Verein angeschlossen ist, durch Äußerungen oder Handlungen herabsetzt.
+
+Vor dem Ausschlussbeschluss in den Fällen 2 und 3 ist dem Betroffenen Gelegenheit zur Rechtfertigung zu geben. Der Ausschlussbeschluss ist schriftlich mitzuteilen. Gegen des Ausschlussbeschluss steht dem Betroffenen innerhalb von zwei Wochen gegenüber dem Vorstand ein Berufungsrecht an die nächstfolgende Mitgliederversammlung zu, zu welcher er
+einzuladen ist. Auf dieser ist ihm gegebenenfalls Gelegenheit zur Rechtfertigung zu geben. Bestätigt die Mitgliederversammlung den Ausschlussbeschluss, ist dieser endgültig; wird er nicht bestätigt, so gilt er als aufgehoben.
+Bis zur Rechtskraft des Ausschlusses ruhen die Rechte des Mitgliedes. Für Jugendliche und Kinder gelten die vorstehenden Bestimmungen sinngemäß. Entsprechende Erklärungen sind den Erziehungsberechtigten gegenüber abzugeben. Gegen den Ausschlussbeschluss des Vorstandes besteht jedoch ein Berufungsrecht an die Mitgliederversammlung für sie nicht.
+
+§ 10 Beiträge
+
+Der Verein erhebt Mitgliedsbeiträge. Er kann Aufnahmegebühren und Umlagen festsetzen. Mitgliedsbeiträge, Aufnahmegebühren und Umlagen werden von der Mitgliederversammlung festgelegt.
+Ehrenmitglieder sind beitragsfrei.
+Der Mitgliedsbeitrag ist jährlich im voraus an den Verein zu bezahlen.
+Der Vorstand ist berechtigt, im Einzelfall Mitgliedsbeiträge, Aufnahmegebühren oder Umlagen zu stunden, zu ermäßigen oder zu erlassen.
+Einzelheiten über die Vereinsbeiträge sind in der vom Vorstand zu erlassenden Beitragsordnung festzusetzen.
+
+§ 11 Vereinsorgane
+
+Die Organe des Vereins sind:
+- die Mitgliederversammlung
+- der Vorstand
+
+§ 12 Mitgliederversammlung
+
+1. Die Mitgliederversammlung ist das oberste Organ des Vereins.
+
+2. Die Mitgliederversammlung beschließt, soweit ihr durch die Satzung nicht weitere Aufgaben übertragen sind, über
+
+a) die Grundsätze und Richtlinien der Vereinsarbeit
+
+b) Wahl des Vorstandes und der Kassenprüfer
+
+c) Bestätigung des Jugendsprechers
+
+d) Entlastung des Vorstandes
+
+e) Genehmigung des vom Vorstand vorzulegenden Jahres- und Kassenberichts
+
+f) Festsetzung der Höhe der Mitgliedsbeiträge
+
+g) Satzungsänderungen
+
+h) Auflösung des Vereins
+
+i) Sonstige Angelegenheiten, die der Mitgliederversammlung unterbreitet werden.
+
+3. Jeweils im ersten Quartal des neuen Geschäftsjahres findet eine ordentliche Mitgliederversammlung statt. Sie ist vom 1. Vorsitzenden, bei dessen Verhinderung vom 2. Vorsitzenden einzuberufen. Die Einberufung erfolgt mindestens zwei Wochen zuvor durch ortsübliche1.Bekanntmachung, jedem Mitglied in zugänglicher Weise unter Mitteilung der Tagesordnung.
+
+4. Die Tagesordnung hat zu enthalten:
+
+4.1. Bericht des Vorstandes
+
+4.2. Bericht der Kassenprüfung
+
+4.3. Entlastung des Vorstandes
+
+4.4. Wahlen
+
+4.5. Festsetzung der Mitgliedsbeiträge
+
+4.6. Beschlussfassung über Anträge
+
+5. Anträge zur Tagesordnung müssen spätestens eine Woche vor der Mitgliederversammlung beim 1. Vorsitzenden eingereicht sein. Ausgenommen hiervon sind Dringlichkeitsanträge, die mit dem Eintritt von Ereignissen begründet werden, welche nach Ablauf der Antragsfrist eingetreten sind. Über ihre Zulassung entscheidet die Versammlung.
+
+6. Antragsberechtigt sind alle stimmberechtigten Mitglieder
+
+7. Anträge zur Änderung der Satzung sind den Mitgliedern mit der Tagesordnung in geeigneter Form bekannt zugeben. Anträge zur Änderung der Satzung können als Dringlichkeitsanträge nicht zugelassen werden.
+
+8. Die Mitgliederversammlung wird vom 1. Vorsitzenden, bei dessen Verhinderung vom 2. Vorsitzenden ansonsten vom ältesten Vorstandsmitglied geleitet.
+
+9. Die Beschlüsse der Mitgliederversammlung werden mit einfacher Mehrheit der erschienenen stimmberechtigten Mitglieder gefasst. Bei Stimmengleichheit gilt ein Antrag als abgelehnt. Für Satzungsänderungen ist eine Mehrheit von 2/3 der Erschienenen erforderlich.
+
+10. Über den Verlauf der Mitgliederversammlung, insbesondere über die gefassten Beschlüsse, ist ein Protokoll zu führen, das vom Schriftführer und dem 1. oder 2. Vorsitzenden zu unterzeichnen ist.
+
+11. Eine außerordentliche Mitgliederversammlung findet statt,
+
+11.1. wenn sie der Vorstand mit Rücksicht auf die Lage des Vereins oder mit Rücksicht auf außergewöhnliche Ereignisse für erforderlich hält,
+
+11.2. im Falle von § 13 Ziff. 5,
+
+11.3. wenn die Einberufung von mindestens 1/10 der Mitglieder gefordert wird.
+
+Es gelten ansonsten die gleichen Vorschriften wie bei der ordentlichen Mitgliederversammlung.
+
+§ 13 Vorstand
+
+Der Vorstand besteht aus:
+1.1. dem 1. Vorsitzenden
+1.2. dem 2. Vorsitzenden
+1.3. dem Geschäftsführer
+1.4. dem Kassenwart
+1.5. dem Schriftführer
+1.6. dem Pressewart
+1.7. dem Vertreter der passiven Mitglieder
+1.8. dem Jugendleiter und Jugendleiterstellvertreter
+1.9. dem Jugendsprecher und Jugendsprecherstellvertreter
+1.10. den Leitern der Abteilungen
+1.11. den Stellvertretenden Leitern der Abteilungen
+
+2. Der Vorstand wird mit Ausnahme des Jugendsprechers von der Mitgliederversammlung gewählt.
+
+3. Der Jugendsprecher wird von der Vereinsjugend gewählt und ist von der Mitgliederversammlung zu bestätigen.
+
+4. Der 1. Vorsitzende, der Kassenwart, der Schriftführer, der Jugendleiter und die stellvertretenden Abteilungsleiter werden in allen durch zwei teilbaren Jahren gewählt. Die weiteren Vorstandsmitglieder werden in den Jahren mit ungerader Endzahl gewählt.
+
+5. Scheidet während des Geschäftsjahres ein Vorstandsmitglied aus, so wird es durch Zuwahl des Vorstandes ersetzt. Bei Ausscheiden eines der beiden Vorsitzenden ist jedoch unverzüglich eine außerordentliche Mitgliederversammlung einzuberufen, die einen neuen Vorsitzenden zu wählen hat.
+
+6. Der Vorstand erledigt die laufenden Vereinsangelegenheiten, insbesondere obliegt ihm die Verwaltung des Vereinsvermögens.
+
+7. Der Vorstand ist mindestens jeden 2. Monat vom 1. Vorsitzenden, bei dessen Verhinderung vom 2. Vorsitzenden einzuberufen.
+
+8. Der Vorstand ist beschlussfähig, wenn mindestens die Hälfte der Mitglieder anwesend sind.
+
+9. Die Beschlüsse des Vorstandes werden mit einfacher Mehrheit gefasst. Bei Stimmengleichheit entscheidet die Stimme des 1.Vorsitzenden.
+
+10. Über die Beschlüsse des Vorstandes ist ein Protokoll zu führen, dass vom 1. oder 2. Vorsitzenden und dem Schriftführer zu unterzeichnen ist.
+
+11. Verschiedene Vorstandsämter mit Ausnahme dem des Geschäftsführers können nicht in einer Person vereinigt werden.
+
+§ 13a Vergütungen für die Vereinstätigkeit
+
+1. Die Vereins- und Organämter werden grundsätzlich ehrenamtlich ausgeübt.
+
+2. Bei Bedarf können Vereins- und Organämter im Rahmen der haushaltsrechtlichen Möglichkeiten entgeltlich auf der Grundlage eines Dienstvertrages oder gegen Zahlung einer Aufwandsentschädigung nach § 3 Nr. 26a EStG (Ehrenamtspauschale) ausgeübt werden.
+
+3. Die Entscheidung über die entgeltliche Vereinstätigkeit nach Ziff. 2 trifft der Vorstand. Gleiches gilt für die Vertragsinhalte und die Vertragsbedingungen.
+
+4. Der Vorstand ist ermächtigt, Tätigkeiten für den Verein gegen Zahlung einer angemessenen Vergütung oder Aufwandsentschädigung zu beauftragen. Maßgebend ist die Haushaltslage des Vereins.
+
+5. Im Übrigen haben die Mitglieder und Mitarbeiter des Vereins einen Aufwendungsersatzanspruch nach § 670 BGB für solche Aufwendungen, die ihnen durch die Tätigkeit für den Verein entstanden sind. Hierzu gehören insbesondere Fahrtkosten, Reisekosten, Porto, Telefon usw.
+
+6. Der Anspruch auf Aufwendungsersatz kann nur innerhalb einer Frist von 3 Monaten nach seiner Entstehung geltend gemacht werden. Erstattungen werden nur gewährt, wenn die Aufwendungen mit Belegen und Aufstellungen, die prüffähig sein müssen, nachgewiesen werden.
+
+7. Vom Vorstand können per Beschluss im Rahmen der steuerrechtlichen Möglichkeiten Grenzen über die Höhe des Aufwendungssatzes nach § 670 BGB festgesetzt werden.
+
+8. Weitere Einzelheiten regelt die Finanzordnung des Vereins, die vom Vorstand erlassen und geändert wird.
+
+§ 14 Gesetzlicher Vertreter
+
+Jeder der beiden Vorsitzenden ist für sich allein gesetzlicher Vertreter des Vereins im Sinne des bürgerlichen Rechts.
+
+§ 15 Geschäftsführer
+
+Der Vorstand bedient sich zur Ausübung seiner Tätigkeit eines Geschäftsführers.
+Der Geschäftsführer führt die regelmäßigen Vereinsgeschäfte in Absprachen mit dem 1. oder 2. Vorsitzenden nach den Beschlüssen des Vorstandes und ist verantwortlich für die Mitgliederverwaltung. In einzelnen Fällen kann der Vorstand dem Geschäftsführer eine beschränkte Vertretungsbefugnis erteilen.
+
+§ 16 Kassenwart
+
+Der Kassenwart hat die Vereinskasse zu führen, alle Einnahmen und Ausgaben genau zu verbuchen, die hierzu gehörigen Belege geordnet aufzubewahren und für die regelmäßig eingehenden Beiträge zu sorgen. Der Kassenwart hat ferner über seiner Tätigkeit auf Verlangen dem Vorstand und jährlich der Mitgliederversammlung zu berichten. Der Vorstand ist jederzeit berechtigt, Einsicht in die Kassenbücher und in die hierzu gehörenden Belege zu nehmen. Darüber hinaus hat er für die regelmäßig zu erstellenden Steuermeldungen zu sorgen.
+
+§ 17 Kassenprüfer
+
+Die ordnungsgemäße Buch- und Kassenführung des Vereins wird auf Antrag des Vorstandes, mindestens jedoch einmal jährlich vor der Mitgliederversammlung durch zwei von der Mitgliederversammlung gewählte Kassenprüfer geprüft. Diese erstatten der Mitgliederversammlung einen Prüfungsbericht. Die Kassenprüfer dürfen nicht Mitglied des Vorstandes sein.
+
+§ 18 Schriftführer
+
+Der Schriftführer hat in jeder Vorstandssitzung und der Mitgliederversammlung das Protokoll zu führen und die Protokolle in der Mitgliederversammlung zur Einsicht vorzulegen. Darüber hinaus führt der Schriftführer eine Vereinschronik mit allen wichtigen Daten und Berichten.
+
+§ 19 Abteilungen
+
+1.Die Durchführung des Sportbetriebes ist Aufgabe der einzelnen Abteilungen. Jede Abteilung wird von einem Abteilungsleiter geleitet. Die Leiter der Abteilungen und ihre Stellvertreter werden auf Vorschlag ihrer Abteilungen von der Mitgliederversammlung gewählt.
+
+2.Die Abteilungen sind selbstständig und arbeiten fachlich unter eigener Verantwortung. Dabei ist eine größtmögliche Zusammenarbeit mit dem Vorstand anzustreben. Beschlüsse der Abteilungen sind dem Vorstand vorzulegen. Diesem steht ein Widerspruchsrecht zu. Macht er hiervon Gebrauch, so unterbleibt die Ausführung des Beschlusses.
+
+3.Die Abteilungen können sich im Rahmen des satzungsmäßigen Vereinszweckes eigene Abteilungs-ordnungen geben.
+
+4.Die Abteilungen führen keine eigene Kasse und können kein eigenes Vermögen bilden. Sie sind rechtlich unselbständige Bestandteile des Vereins.
+
+5.Die Einrichtung von Abteilungen für die im Verein betriebenen Sportarten obliegt dem Vorstand.
+
+§ 20 Jugendleiter und Jugendsprecher
+
+Der Jugendleiter und der Jugendsprecher sowie ihre Stellvertreter sind die Vertreter der Vereinsjugend im Vorstand. Sie haben in Zusammenarbeit mit den Übungsleitern für einen geregelten Spielbetrieb und für die außersportliche Betreuung der Vereinsjugend zu sorgen.
+
+§ 21 Jugend des Vereins
+
+Die Jugend führt und verwaltet sich im Rahmen der Satzung und der Ordnungen des Vereins selbstständig. Sie entscheidet über die Verwendung der ihr zufließenden Mittel.
+Alles Nähere regelt die Jugendordnung. Diese wird auf Vorschlag der Vereinsjugend vom Vorstand mit einfacher Mehrheit beschlossen. Sie ist nicht Satzungsbestandteil.
+
+§ 22 Strafbestimmungen
+
+Sämtliche Vereinsangehörige unterliegen, von dem in § 5 genannten Ausschluss abgesehen, einer Strafgewalt. Der Vorstand kann Ordnungsstrafen (Verweise, Verwarnungen, oder Geldstrafen) bis zu € 150,-- gegen jeden Vereinsangehörigen verhängen, der sich gegen die Satzung, das Ansehen, die Ehre oder das Vermögen des Vereins vergeht. Vor der Bestrafung ist dem Betroffenen Gelegenheit zur Rechtfertigung zu geben.
+
+§ 23 Auflösung des Vereins
+
+Die Auflösung des Vereins kann nur in einer Mitglieder-versammlung beschlossen werden, auf deren Tagesordnung die Beschlussfassung über die Vereinsauflösung den Mitgliedern angekündigt ist. Der Beschluss bedarf einer Mehrheit von 3/4 der erschienenen Mitglieder.
+Für den Fall der Auflösung des Vereins oder bei Wegfall des bisherigen Vereinszwecks bestellt die Mitgliederversammlung zwei Liquidatoren, welche die Geschäfte des Vereins abzuwickeln haben. Das nach Bezahlung der Schulden noch vorhandene Vereinsvermögen fällt mit Zustimmung des Finanzamtes an die Gemeinde Stetten a.k.M. zur ausschließlichen Verwendung im Sinne des in § 3 dieser Satzung festgelegten Zwecks.
+
+§ 24 Inkrafttreten
+
+Diese Satzung wurde von der Mitgliederversammlung am 20. März 2026 beschlossen und ersetzt die bisherige Satzung.
+
+Letzte Änderung von eri am 31.05.2026 09:50 Uhr
+TEXT
+],
+ ['Jugendordnung','jugendordnung','Ordnung für die Jugendarbeit des Vereins.',20, '1. Alle Vereinsmitglieder bis zum vollendeten 18. Lebensjahr und alle regelmäßig und unmittelbar in der Vereinsjugendarbeit tätigen Mitarbeiter/innen bilden die Vereinsjugend im Sportverein Frohnstetten 1912/1949 e.V.
+
+2. Die Vereinsjugend ist jugend- und gesellschaftspolitisch aktiv. Sie will jungen Menschen ermöglichen, in zeitgemäßen Gemeinschaften Sport zu treiben. Darüber hinaus soll das gesellschaftliche Engagement angeregt, die Jugendarbeit im Verein unterstützt und koordiniert und zur Persönlichkeitsbildung beigetragen werden.
+
+3. Die Jugendvollversammlung ist das oberste Organ der Vereinsjugend. Sie tritt mindestens alle 2 Jahre zusammen und wählt den Vereinsjugendsprecher.
+
+4. Der Vereinsjugendausschuss besteht aus dem Jugendleiter als Vorsitzenden, dem Jugendsprecher und den Abteilungsleitern. Der Jugendausschuss plant und koordiniert die Jugendarbeit.
+
+5. Der Jugendleiter und der Jugendsprecher sind stimmberechtigte Mitglied im Vereinsvorstand.
+
+6. Der Jugendleiter vertritt die Vereinsjugend nach innen und außen.
+
+7. Die Vereinsjugend ist verantwortlicher Empfänger der Zuschüsse für jugendpflegerische Maßnahmen. Die Jugendkasse wird vom Hauptkassierer geführt.
+
+8. Die Jugendordnung muss von der Jugendvollversammlung mit einer Mehrheit von zwei Dritteln der anwesenden stimmberechtigten Mitglieder beschlossen und vom Vereinsvorstand mit einfacher Mehrheit bestätigt werden. Das gleiche gilt für Änderungen. Die Jugendordnung bzw. Änderung tritt/treten mit der Bestätigung durch den Vorstand in Kraft.
+
+Letzte Änderung von eri am 19.11.2006 21:00 Uhr'],
+ ['Prävention / Kinderschutz','praevention-kinderschutz','Informationen und Unterlagen zu Prävention und Kinderschutz.',30, 'Der Schutz unserer Kinder ist uns wichtig!
+
+Als Schutzbeauftragte und Ansprechpartner stehen folgende Personen zur Verfügung:
+
+Vorstand:
+Alexander Neuburger
+Heusteig 7
+72510 Frohnstetten
+Tel.: 07573/954359
+E-Mail: sv-frohnstetten@web.de
+
+Vereinsmitglied:
+Kevin Ritter
+Zum Stofer 1/3
+72510 Stetten a.k.M.
+Tel.: 01622734113
+E-Mail: kevinritter95@web.de
+
+Bitte beachten Sie die Schutzordnung.
+
+Letzte Änderung von eri am 02.09.2026 15:55 Uhr'],
+ ['Beitragsordnung','beitragsordnung','Beitragsordnung nach § 10 der Vereinssatzung (Festgesetzt in der Mitgliederversammlung am 24. März 2023).',40, 'Beitragsordnung nach § 10 der Vereinssatzung (Festgesetzt in der Mitgliederversammlung am 24. März 2023)
+
+1. Die Beitragsordnung regelt alle Einzelheiten über die Pflichten der Mitglieder zur Entrichtung von Beiträgen an den Verein. Sie ist Bestandteil der Beitrittserklärung.
+
+2. Der Mitgliedsbeitrag wird von der Mitgliederversammlung festgesetzt.
+
+3. Der jährliche Beitrag an den Verein beträgt für passive Mitglieder:
+3.1. Kinder und Jugendliche bis 18 Jahre: € 19,00
+3.2. Erwachsene ab 18 Jahre: € 28,00
+3.3. Familienbeitrag: € 50,00
+3.4. Passives Mitglied ist, wer keine Leistungen des Vereins in Anspruch nimmt. Wer sich mind. einmal im Jahr im Verein sportlich betätigt, gilt als aktives Mitglied. Der Familienbeitrag für passive Mitglied findet nur Anwendung, wenn alle in diesem Familienbeitrag enthaltenen Familienmitglieder passiv sind. Im Zweifel entscheidet der Vorstand nach Anhörung des Mitglieds.
+3.5 Ehrenmitglieder sind beitragsfrei.
+
+4. Der jährliche Beitrag an den Verein beträgt für aktive Mitglieder:
+4.1. Kinder und Jugendliche bis 18 Jahre: € 24,00
+4.2. Erwachsene ab 18 Jahre: € 42,00
+4.3. Familienbeitrag: € 70,00
+4.4. Aktive Mitglieder sind alle nicht passiven Mitglieder.
+
+5. Benutzung des Tennisfeldes zusätzlich zum jeweils festgesetzten Jahresbeitrag:
+5.1. Kinder und Jugendliche: € 6,00
+5.2. Erwachsene ab 18 Jahren: € 15,00
+
+6.1 In Ausbildung befindliche Personen, Wehr- und Erstzdienstleistende über 18 Jahre bis 27 Jahre zahlen auf Antrag die Hälfte ihres Beitrags, jedoch nicht weniger als bei Ziff. 3.1 bzw. 4.1.
+6.2 Anträge auf Änderung der Beitragshöhe sind mit entsprechenden Nachweisen vorzulegen.
+6.3 Ein Anschriftenwechsel und eine Änderung der Bankverbindung ist unverzüglich mitzuteilen.
+
+7. Im Jahresbeitrag ist die Sportversicherung des WLSB inbegriffen.
+
+8. Der Einzug des Beitrags erfolgt durch Abbuchungsverfahren einmal jährlich. Beitragskonto: VR Bank eG Heuberg - Winterlingen IBAN: DE24 6536 1898 0030 3130 07
+
+9. Mitglieder, die am Abbuchungsverfahren nicht teilnehmen, entrichten ihre Beiträge auf das o.g. Konto.
+
+10. Bei Vereinsbeitritt bis zum 30.06. ist der volle Beitrag, ab dem 01.07. der halbe Beitrag zu entrichten.
+
+11. Der Vereinsaustritt ist nur zum Ende eines Kalenderjahres möglich und muss bis zum 30.11. schriftlich beim 1. Vorstand erklärt werden.
+
+12. Die durch die Mitgliederversammlung festgesetzten Beiträge treten zum 01. Januar des Jahres, in dem der Beschluss gefasst wird, oder zum beschlossenen Zeitpunkt in Kraft.
+
+13. Die Mitgliederverwaltung erfolgt durch elektronische Datenverarbeitung (EDV); die personengeschützten Daten der Mitglieder werden unter Beachtung des Bundesdatenschutzgesetzes gespeichert.
+
+Letzte Änderung von eri am 13.05.2023 13:29 Uhr'],
+ ['Aufnahmeformular','aufnahmeformular','Beitritt zum Sportverein Frohnstetten.',50, 'Aufnahmeformular Sportverein Frohnstetten
+
+Sie wollen dem SV Frohnstetten beitreten? Dann laden Sie sich den Aufnahmeantrag herunter, drucken ihn aus, und bringen den ausgefüllten Antrag zu einem Übungsleiter, Trainer oder Vorstandsmitglied.'],
+ ['Gründungsprotokoll','gruendungsprotokoll','Historisches Gründungsprotokoll des Vereins.',60, 'Gründungsprotokoll des Turnvereins Frohnstetten 1912
+
+„Auf Veranlassung des Reinhard Brunner versammelten sich am 18ten November abends 8 Uhr im Gasthof zum Schwanen eine Anzahl junger Leute zwecks Gründung eines Turnvereins.
+
+Nachdem Zweck und Ziel der Turnvereine den Anwesenden vor Augen geführt wurden, erklärten sich 13 Männer zur Gründung eines Turnvereins bereit, und erklärten öffentlich ihren Beitritt, der dann den Namen Turnverein Frohnstetten erhielt.
+
+Auf Vorschlag des Vorsitzenden Reinh. Brunner wurden nun per Akklamation als Vorstand gewählt:
+Daniel Pfaff Schriftführer: Reinh. Brunner
+Turnwart: Daniel Gaiser Kassier: Julius Dreher
+Ausschussmitglied: Johann Abt. Als weiteres wurden die Statuten der Turnvereine des Hohenzollern Gaues hergegeben und angenommen. Die Aufnahmegebühr eines jeden Mitglieds beträgt eine Mark. Monatsbeiträge werden 20 Pfennig erhoben. Zöglinge zahlen keine Aufnahmegebühr jedoch 10 Pfennig.
+
+Als Vereinslokal wurde das Nebenzimmer des Gasthofes Schwanen bestimmt.
+Mitgliederverzeichnis bei Gründung d. V.
+
+Vorstand: Daniel Pfaff
+
+Schriftwart: Reinh. Brunner
+
+Turnwart: Daniel Gaiser
+
+Kassier: Julius Dreher
+
+Ausschuss: Maler Abt
+
+Mitglieder: August Holdenried, Josef Neuburger, Anton Reiser, Josef Grüner, Stefan Oswald, Johann Müller, Albert Ludwig, Konrad Kessler.“
+
+Letzte Änderung von eri am 12.04.2005 19:19 Uhr'],
+ ['Vereinslied','vereinslied','Das Vereinslied des SV Frohnstetten.',70, 'Das Vereinslied ist als Vereinsunterlage vorgesehen. Der Text bzw. die Datei kann von der Redaktion ergänzt oder ausgetauscht werden.'],
+];
+$st=$db->prepare("INSERT OR IGNORE INTO club_documents(title,slug,description,content,sort_order) VALUES(?,?,?,?,?)"); foreach($docs as $x)$st->execute($x);
+$st=$db->prepare("UPDATE club_documents SET description=?, content=? WHERE slug=? AND (content IS NULL OR trim(content)='')"); foreach($docs as $x)$st->execute([$x[2],$x[4],$x[1]]);
+
+
+if ((int)$db->query("SELECT COUNT(*) FROM users")->fetchColumn() === 0) {
+    $st = $db->prepare("INSERT INTO users(name,email,password_hash,role) VALUES(?,?,?,?)");
+    $st->execute(['Lokaler Admin','admin@svfrohnstetten.local',password_hash('SVF-Test-2026!',PASSWORD_DEFAULT),'admin']);
+}
+
+// Administratoren erhalten automatisch Zugriff auf alle aktiven Sportbereiche.
+$adminId = (int)($db->query("SELECT id FROM users WHERE role='admin' ORDER BY id LIMIT 1")->fetchColumn() ?: 0);
+if ($adminId) {
+    $st = $db->prepare("INSERT OR IGNORE INTO user_departments(user_id,department_id) VALUES(?,?)");
+    foreach ($db->query("SELECT id FROM departments WHERE active=1") as $d) $st->execute([$adminId,(int)$d['id']]);
+}
